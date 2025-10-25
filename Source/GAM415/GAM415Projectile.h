@@ -26,7 +26,10 @@ class AGAM415Projectile : public AActor
 	UStaticMeshComponent* ballMesh;
 
 	UPROPERTY(EditAnywhere)
-	UMaterial* baseMat;
+	UMaterialInterface* decalMat;
+
+	UPROPERTY(EditAnywhere)
+	UMaterial* ProjectileColor;
 
 public:
 	AGAM415Projectile();
@@ -39,5 +42,19 @@ public:
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	UPROPERTY()
+	UMaterialInstanceDynamic* ProjColor;
+
+	UPROPERTY(EditAnywhere, Category="Projectile")
+	UMaterialInterface* ProjMat;
+
+	FLinearColor RanColor;
+	UMaterialInstanceDynamic* ProjDMI;
+
+protected:
+	virtual void BeginPlay() override;
+
+	
 };
 
