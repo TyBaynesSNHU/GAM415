@@ -6,6 +6,8 @@
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 AGAM415Projectile::AGAM415Projectile() 
 {
@@ -69,19 +71,25 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());	
+
 	}
 
 	if ((decalMat) && (OtherActor != nullptr))
 	{
+		//Assign Niagara system to particleComp. colorP material(set in engine details window). After much debugging when the particles wouldn't spawn, I determined that the component was getting destroyed too early for the attachment to work properly. I changed it to spawn at location and have it effectively set to destroy itself
+		UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), colorP, Hit.Location, Hit.Normal.Rotation(), FVector(1.f), true, true);
+		particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), RanColor);
+
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
 
 
 		//Places decal in world based on these metrics: world location, material, size is random between 20 and 40 units, grabs the hit location, rotates the normals of the decal to face the camera, infinite lifespan
 		auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
 		auto MatInstance = Decal->CreateDynamicMaterialInstance();
-		
+
 		MatInstance->SetVectorParameterValue("Color", RanColor);
 		MatInstance->SetScalarParameterValue("Frames", frameNum);
-
 	}
+	Destroy();
+	
 }
