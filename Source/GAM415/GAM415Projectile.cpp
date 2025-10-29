@@ -39,6 +39,13 @@ AGAM415Projectile::AGAM415Projectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	//ConstructorHelper to force assign colorP and splat decal reference so it stops unlinking upon engine refresh
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Script/Engine.Material'/Game/Materials/Decal/Splat1_MAT.Splat1_MAT'"));
+	if (MaterialFinder.Succeeded())
+	{
+		decalMat = MaterialFinder.Object;
+	}
 }
 
 //Begin play
@@ -76,9 +83,14 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 	if ((decalMat) && (OtherActor != nullptr))
 	{
-		//Assign Niagara system to particleComp. colorP material(set in engine details window). After much debugging when the particles wouldn't spawn, I determined that the component was getting destroyed too early for the attachment to work properly. I changed it to spawn at location and have it effectively set to destroy itself
-		UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), colorP, Hit.Location, Hit.Normal.Rotation(), FVector(1.f), true, true);
-		particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), RanColor);
+		if (colorP)
+		{
+			//Assign Niagara system to particleComp. colorP material(set in engine details window). After much debugging when the particles wouldn't spawn, I determined that the component was getting destroyed too early for the attachment to work properly. I changed it to spawn at location and have it effectively set to destroy itself
+			UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), colorP, Hit.Location, Hit.Normal.Rotation(), FVector(1.f), true, true);
+			particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), RanColor);
+			//location D:\Unreal\Projects\GAM415\Content\Materials
+			//
+		}
 
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
 
