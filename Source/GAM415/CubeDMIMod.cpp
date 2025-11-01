@@ -18,6 +18,13 @@ ACubeDMIMod::ACubeDMIMod()
 	RootComponent = boxComp;
 	cubeMesh->SetupAttachment(boxComp);
 
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ConfettiFX(TEXT("/Script/Niagara.NiagaraSystem'/Game/Materials/Confetti_P.Confetti_P'"));
+	if (ConfettiFX.Succeeded())
+	{
+		colorP = ConfettiFX.Object;
+	}
+
 }
 
 // Called when the game starts or when spawned

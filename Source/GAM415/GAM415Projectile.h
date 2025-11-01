@@ -33,7 +33,7 @@ class AGAM415Projectile : public AActor
 	UMaterial* ProjectileColor;
 
 	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* colorP;
+	UNiagaraSystem* Splat;
 
 public:
 	AGAM415Projectile();
