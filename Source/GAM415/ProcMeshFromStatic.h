@@ -4,23 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProcPlane.generated.h"
-
-class UProceduralMeshComponent;
-
+#include "ProceduralMeshComponent.h"
+#include "ProcMeshFromStatic.generated.h"
 
 UCLASS()
-class GAM415_API AProcPlane : public AActor
+class GAM415_API AProcMeshFromStatic : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AProcPlane();
+	AProcMeshFromStatic();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 	virtual void PostActorCreated() override;
 	virtual void PostLoad() override;
 
@@ -28,22 +27,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere)
-	TArray<FVector> Vertices;
+	UPROPERTY()
+		TArray<FVector> Vertices;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	TArray<int> Triangles;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
+	TArray<FVector> Normals;
 	TArray<FVector2D> UV0;
 
-	UPROPERTY(EditAnywhere)
-	UMaterialInterface* PlaneMat;
+	UPROPERTY()
+	TArray<FLinearColor> VertexColors;
+	TArray<FColor> UpVertexColors;
+	TArray<FProcMeshTangent> Tangents;
 
-	UFUNCTION()
-	void CreateMesh();
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* baseMesh;
+
 
 private:
 	UProceduralMeshComponent* procMesh;
+	void GetMeshData();
+	void CreateMesh();
 
 };
