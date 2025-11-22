@@ -66,7 +66,7 @@ void AGAM415Projectile::BeginPlay()
 	float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
 	float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
 
-//Establish variables/definitions for colors upon creation. RanColor = Random color
+	//Establish variables/definitions for colors upon creation. RanColor = Random color
 	RanColor = FLinearColor(ranNumX, ranNumY, ranNumZ, 1.0f);
 
 	if (ProjMat && ballMesh)
@@ -86,7 +86,7 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	// Only add impulse and destroy projectile if we hit a physics object
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());	
+		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 	}
 	//if the decal value is set

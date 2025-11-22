@@ -39,7 +39,7 @@ void APortal::BeginPlay()
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnOverlapBegin);
 	mesh->SetHiddenInSceneCapture(true);
 	
-
+	//If material exists, set the mesh material to mat (this enables the rendering of the portal/projection of the camera to the mesh)
 	if (mat)
 	{
 		mesh->SetMaterial(0, mat);
@@ -79,6 +79,7 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	}
 }
 
+//Use a bool to prevent the player from instantly overlapping the portal upon teleporting and then teleporting again causing an infinite loop
 void APortal::SetBool(AGAM415Character* playerChar)
 {//Sets bool so the player can teleport again
 	if (playerChar)
@@ -87,6 +88,7 @@ void APortal::SetBool(AGAM415Character* playerChar)
 	}
 }
 
+//Called to render a new frame(called in super::tick above). This draws the render based on player postion relative to the portal's camera.
 void APortal::UpdatePortals()
 {//Grabbing location/rotation of the camera component of the portal to apply to the playerChar
 	FVector Location = this->GetActorLocation() - OtherPortal->GetActorLocation();
