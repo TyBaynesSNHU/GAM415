@@ -3,6 +3,7 @@
 
 #include "Portal.h"
 #include "GAM415Character.h"
+#include "GAM415Projectile.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -57,6 +58,7 @@ void APortal::Tick(float DeltaTime)
 void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AGAM415Character* playerChar = Cast<AGAM415Character>(OtherActor);
+	AGAM415Projectile* playerProj = Cast<AGAM415Projectile>(OtherActor);
 	//If cast to playerChar is valid->if otherPortal is valid->if player is not actively teleporting(to stop loops/do once)
 	if (playerChar)
 	{
@@ -77,6 +79,25 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			}
 		}
 	}
+	if (playerProj)
+	{
+		if (OtherPortal)
+		{
+			if (!playerProj->isTeleporting)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 999.0f, FColor::Yellow, FString::Printf(TEXT("PlayerProj collision with portal")));//Debug message
+				playerProj->isTeleporting = true;
+				FVector loc = OtherPortal->rootArrow->GetComponentLocation();
+				playerProj->SetActorLocation(loc);
+
+				FTimerHandle TimerHandle; //initialize TimerHandle variable as Timerhandle function
+				FTimerDelegate TimerDelegate; //Initialize TimerDelegate variable as TimerDelegate fucntion
+				TimerDelegate.BindUFunction(this, "SetBool", playerChar);//functions arguments: this= this class, set bool function, cast to playerchar. --Sets the playerChar isTeleporting bool to false.
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1, false);//Function arguments: timerhandle/delegate, how many seconds before it gets called, does not loop
+
+			}
+		}
+	}
 }
 
 //Use a bool to prevent the player from instantly overlapping the portal upon teleporting and then teleporting again causing an infinite loop
@@ -85,6 +106,14 @@ void APortal::SetBool(AGAM415Character* playerChar)
 	if (playerChar)
 	{
 		playerChar->isTeleporting = false;
+	}
+}
+
+void APortal::SetProjBool(AGAM415Projectile* playerProj)
+{
+	if (playerProj)
+	{
+		playerProj->isTeleporting = false;
 	}
 }
 

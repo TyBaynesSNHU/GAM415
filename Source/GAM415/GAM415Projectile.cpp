@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PerlinProc.h"
+#include "Portal.h"
 #include "NiagaraComponent.h"
 
 AGAM415Projectile::AGAM415Projectile() 
@@ -83,6 +84,7 @@ void AGAM415Projectile::BeginPlay()
 //On hit/collision with the projectile mesh
 void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	APortal* portal = Cast<APortal>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics object
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
@@ -100,25 +102,32 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 			particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), RanColor);
 			//location D:\Unreal\Projects\GAM415\Content\Materials
 			//
+			float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
+
+
+			//Places decal in world based on these metrics: world location, material, size is random between 20 and 40 units, grabs the hit location, rotates the normals of the decal to face the camera, infinite lifespan
+			auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
+			auto MatInstance = Decal->CreateDynamicMaterialInstance();
+
+			MatInstance->SetVectorParameterValue("Color", RanColor);
+			MatInstance->SetScalarParameterValue("Frames", frameNum);
+			Destroy();
 		}
-
-		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
-
-
-		//Places decal in world based on these metrics: world location, material, size is random between 20 and 40 units, grabs the hit location, rotates the normals of the decal to face the camera, infinite lifespan
-		auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
-		auto MatInstance = Decal->CreateDynamicMaterialInstance();
-
-		MatInstance->SetVectorParameterValue("Color", RanColor);
-		MatInstance->SetScalarParameterValue("Frames", frameNum);
-
 		//Affect the perlin proc terrain. If projectile hits procTerrain, run alter terrain	
 		APerlinProc* procTerrain = Cast<APerlinProc>(OtherActor);
 		if (procTerrain)
 		{
 			procTerrain->AlterMesh(Hit.ImpactPoint);
+			float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
+
+
+			//Places decal in world based on these metrics: world location, material, size is random between 20 and 40 units, grabs the hit location, rotates the normals of the decal to face the camera, infinite lifespan
+			auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
+			auto MatInstance = Decal->CreateDynamicMaterialInstance();
+
+			MatInstance->SetVectorParameterValue("Color", RanColor);
+			MatInstance->SetScalarParameterValue("Frames", frameNum);
+			Destroy();
 		}
 	}
-	Destroy();
-	
 }

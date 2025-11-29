@@ -7,6 +7,7 @@
 
 
 
+
 // Sets default values
 APerlinProc::APerlinProc()
 {
@@ -25,7 +26,7 @@ void APerlinProc::BeginPlay()
 
 	CreateVertices();
 	CreateTriangles();
-	ProcMesh->CreateMeshSection(SectionID, Vertices, Triangles, Normals, UV0, UpVertexColors, TArray<FProcMeshTangent>(), true);
+	ProcMesh->CreateMeshSection(SectionID, Vertices, Triangles, Normals, UV0, VertexColors, TArray<FProcMeshTangent>(), true);
 	ProcMesh->SetMaterial(0, Mat);
 	
 }
@@ -40,13 +41,15 @@ void APerlinProc::AlterMesh(FVector impactPoint)
 		if (FVector(Vertices[i] - tempVector).Size() < radius)
 		{
 			Vertices[i] = Vertices[i] - Depth;
-			ProcMesh->UpdateMeshSection(SectionID, Vertices, Normals, UV0, UpVertexColors, TArray<FProcMeshTangent>());
+			ProcMesh->UpdateMeshSection(SectionID, Vertices, Normals, UV0, VertexColors, TArray<FProcMeshTangent>());
 		}
 	}
 }
 
 void APerlinProc::CreateVertices()
 {
+
+
 	//Nested for-loop that will create vertices until the amount created equals XSize and YSize
 	for (int x = 0; x <= XSize; x++)
 	{

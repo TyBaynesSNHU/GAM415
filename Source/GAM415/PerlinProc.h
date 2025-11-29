@@ -68,7 +68,7 @@ private:
 	TArray<int> Triangles;
 	TArray<FVector2D> UV0;
 	TArray<FVector> Normals;
-	TArray<FColor> UpVertexColors;
+	TArray<FColor> VertexColors;
 	
 	int SectionID = 0;
 

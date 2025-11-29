@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Portal.h"
 #include "GAM415Projectile.generated.h"
 
 class USphereComponent;
@@ -37,6 +38,9 @@ class AGAM415Projectile : public AActor
 
 public:
 	AGAM415Projectile();
+
+	UPROPERTY(EditAnywhere)
+	bool isTeleporting;
 
 	/** called when projectile hits something */
 	UFUNCTION()

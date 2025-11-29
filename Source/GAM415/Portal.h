@@ -57,6 +57,9 @@ public:
 	void SetBool(AGAM415Character* playerChar);
 
 	UFUNCTION()
+	void SetProjBool(AGAM415Projectile* playerProj);
+
+	UFUNCTION()
 	void UpdatePortals();
 
 
