@@ -62,13 +62,20 @@ void AGAM415Projectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Generates the random numbers upon creation/spawn of the projectile so the color code can be accessed equally with the mesh and particles.
-	float ranNumX = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-	float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-	float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+	if (bUseOverrideColor)
+	{
+		RanColor = OverrideColor;
+	}
+	else
+	{
+		//Generates the random numbers upon creation/spawn of the projectile so the color code can be accessed equally with the mesh and particles.
+		float ranNumX = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
 
-	//Establish variables/definitions for colors upon creation. RanColor = Random color
-	RanColor = FLinearColor(ranNumX, ranNumY, ranNumZ, 1.0f);
+		//Establish variables/definitions for colors upon creation. RanColor = Random color
+		RanColor = FLinearColor(ranNumX, ranNumY, ranNumZ, 1.0f);
+	}
 
 	if (ProjMat && ballMesh)
 	{
@@ -106,7 +113,7 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 
 			//Places decal in world based on these metrics: world location, material, size is random between 20 and 40 units, grabs the hit location, rotates the normals of the decal to face the camera, infinite lifespan
-			auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
+			auto Decal = UGameplayStatics::SpawnDecalAttached(decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), OtherComp, Hit.BoneName, Hit.ImpactPoint, FRotator::ZeroRotator, EAttachLocation::KeepWorldPosition, 0.f);
 			auto MatInstance = Decal->CreateDynamicMaterialInstance();
 
 			MatInstance->SetVectorParameterValue("Color", RanColor);

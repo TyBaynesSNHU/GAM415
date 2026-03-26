@@ -18,6 +18,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class AGAM415Projectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colors")
+	TArray<FLinearColor> ColorPalette;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colors")
+	UMaterialInterface* WeaponMat;
+
+	UPROPERTY(VisibleAnywhere, Category = "Color")
+	UMaterialInstanceDynamic* WeaponDMI;
+
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
@@ -57,4 +66,7 @@ protected:
 private:
 	/** The Character holding this weapon*/
 	AGAM415Character* Character;
+
+	FLinearColor CurrentColor;
+	void PickNewColor();
 };

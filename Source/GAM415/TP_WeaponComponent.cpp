@@ -41,7 +41,15 @@ void UTP_WeaponComponent::Fire()
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AGAM415Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			AGAM415Projectile* Projectile = World->SpawnActorDeferred<AGAM415Projectile>(ProjectileClass, FTransform(SpawnRotation, SpawnLocation), nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+
+			if (Projectile)
+			{
+				Projectile->bUseOverrideColor = true;
+				Projectile->OverrideColor = CurrentColor;
+				UGameplayStatics::FinishSpawningActor(Projectile, FTransform(SpawnRotation, SpawnLocation));
+			}
+			PickNewColor();
 		}
 	}
 	
@@ -71,6 +79,24 @@ void UTP_WeaponComponent::AttachWeapon(AGAM415Character* TargetCharacter)
 		return;
 	}
 
+	//Init pallette and pick color
+	if (ColorPalette.Num() == 0)
+	{
+		ColorPalette.Add(FLinearColor(1.f, 0.f, 0.f, 1.f)); // Red
+		ColorPalette.Add(FLinearColor(0.f, 1.f, 0.f, 1.f)); //Green
+		ColorPalette.Add(FLinearColor(0.f, 0.f, 1.f, 1.f)); //Blue
+		ColorPalette.Add(FLinearColor(1.f, 1.f, 0.f, 1.f)); //Yellow
+		ColorPalette.Add(FLinearColor(1.f, 0.f, 1.f, 1.f)); //Magenta
+	}
+
+	if (WeaponMat)
+	{
+		WeaponDMI = UMaterialInstanceDynamic::Create(WeaponMat, this);
+		SetMaterial(0, WeaponDMI);
+	}
+
+	PickNewColor();
+
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -92,6 +118,20 @@ void UTP_WeaponComponent::AttachWeapon(AGAM415Character* TargetCharacter)
 			// Fire
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
 		}
+	}
+}
+
+void UTP_WeaponComponent::PickNewColor()
+{
+	if (ColorPalette.Num() == 0) return;
+
+	int32 RandIndex = FMath::RandRange(0, ColorPalette.Num() - 1);
+	CurrentColor = ColorPalette[RandIndex];
+
+	//Apply
+	if (WeaponDMI)
+	{
+		WeaponDMI->SetVectorParameterValue("Color", CurrentColor);
 	}
 }
 

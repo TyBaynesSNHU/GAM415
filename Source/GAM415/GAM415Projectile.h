@@ -42,6 +42,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTeleporting;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Color")
+	bool bUseOverrideColor = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Color")
+	FLinearColor OverrideColor;
+
 	/** called when projectile hits something */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
