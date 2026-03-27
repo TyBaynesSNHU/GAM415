@@ -89,13 +89,20 @@ void UTP_WeaponComponent::AttachWeapon(AGAM415Character* TargetCharacter)
 		ColorPalette.Add(FLinearColor(1.f, 0.f, 1.f, 1.f)); //Magenta
 	}
 
-	if (WeaponMat)
-	{
-		WeaponDMI = UMaterialInstanceDynamic::Create(WeaponMat, this);
-		SetMaterial(0, WeaponDMI);
-	}
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+		{
+			if (WeaponMat)
+			{
+				WeaponDMI = UMaterialInstanceDynamic::Create(WeaponMat, this);
+				//APply to all material slots (potential fix to a glitch)
+				for (int32 i = 0; i < GetNumMaterials(); i++)
+				{
+					SetMaterial(i, WeaponDMI);
+				}
+			}
 
-	PickNewColor();
+			PickNewColor();
+		});
 
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
@@ -132,6 +139,12 @@ void UTP_WeaponComponent::PickNewColor()
 	if (WeaponDMI)
 	{
 		WeaponDMI->SetVectorParameterValue("Color", CurrentColor);
+
+		//Potential glitch fix
+		for (int32 i = 0; i < GetNumMaterials(); i++)
+		{
+			SetMaterial(i, WeaponDMI);
+		}
 	}
 }
 

@@ -35,10 +35,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Color")
     TArray<FLinearColor> ColorPalette;
 
-    // Decal material for wrong-color hits (reuse your Splat1_MAT)
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
-    UMaterialInterface* DecalMat;
-
     // Called by the projectile on hit
     UFUNCTION(BlueprintCallable, Category = "Color")
     void HandleProjectileHit(FLinearColor ProjectileColor, const FHitResult& Hit);

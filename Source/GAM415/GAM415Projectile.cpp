@@ -2,6 +2,7 @@
 
 #include "GAM415Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "CylinderTarget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
@@ -98,6 +99,25 @@ void AGAM415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 	}
+
+	ACylinderTarget* Cylinder = Cast<ACylinderTarget>(OtherActor);
+	if (Cylinder)
+	{
+		Cylinder->HandleProjectileHit(RanColor, Hit);
+
+		//If wrong: display decal
+		if (decalMat)
+		{
+			float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
+			auto Decal = UGameplayStatics::SpawnDecalAttached(decalMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), OtherComp, Hit.BoneName, Hit.ImpactPoint, FRotator::ZeroRotator, EAttachLocation::KeepWorldPosition, 0.f);
+			auto MatInstance = Decal->CreateDynamicMaterialInstance();
+			MatInstance->SetVectorParameterValue("Color", RanColor);
+			MatInstance->SetScalarParameterValue("Frames", frameNum);
+		}
+		Destroy();
+		return;
+	}
+
 	//if the decal value is set
 	if ((decalMat) && (OtherActor != nullptr))
 	{
